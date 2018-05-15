@@ -5,4 +5,5 @@ com/gmail/akshitgupta1695/cryptoHandler/handlers/SupportedCurrenciesHandler.clas
 com/gmail/akshitgupta1695/cryptoHandler/handlers/LaunchRequestHandler.class
 com/gmail/akshitgupta1695/cryptoHandler/handlers/GetPriceHandler.class
 com/gmail/akshitgupta1695/cryptoHandler/handlers/ExitSkillHandler.class
+com/gmail/akshitgupta1695/cryptoHandler/models/PricesDto.class
 com/gmail/akshitgupta1695/cryptoHandler/CryptoHandlerSkillStreamHandler.class
