@@ -8,9 +8,8 @@ public class CryptoHandlerSkillStreamHandler extends SkillStreamHandler {
 
 	public CryptoHandlerSkillStreamHandler() {
 		super(Skills.standard()
-                .addRequestHandlers(new LaunchRequestHandler(),new ExitSkillHandler(),new HelpIntentHandler(),new SessionEndedHandler(),new SupportedCurrenciesHandler())
+                .addRequestHandlers(new LaunchRequestHandler(),new ExitSkillHandler(),new HelpIntentHandler(),new SessionEndedHandler(),new SupportedCurrenciesHandler(),new GetPriceHandler())
                 .build());
-		// TODO Auto-generated constructor stub
 	}
 
 }

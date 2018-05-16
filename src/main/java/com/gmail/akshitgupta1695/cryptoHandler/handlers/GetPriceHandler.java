@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.io.IOUtils;
@@ -22,7 +23,11 @@ import org.json.simple.parser.ParseException;
 
 import com.amazon.ask.dispatcher.request.handler.HandlerInput;
 import com.amazon.ask.dispatcher.request.handler.RequestHandler;
+import com.amazon.ask.model.DialogState;
+import com.amazon.ask.model.IntentRequest;
 import com.amazon.ask.model.Response;
+import com.amazon.ask.model.Slot;
+import com.amazon.ask.model.slu.entityresolution.StatusCode;
 import com.gmail.akshitgupta1695.cryptoHandler.models.PricesDto;
 import com.gmail.akshitgupta1695.cryptoHandler.util.Constants;
 
@@ -36,8 +41,85 @@ public class GetPriceHandler implements RequestHandler{
 
 	@Override
 	public Optional<Response> handle(HandlerInput input) {
-		// TODO Auto-generated method stub
+		 IntentRequest intentRequest = (IntentRequest) input.getRequestEnvelope().getRequest();
+		
+		 if (intentRequest.getDialogState() == DialogState.STARTED){
+//			 Map<String,Slot> slotMap=intentRequest.getIntent().getSlots();
+			    // Pre-fill slots: update the intent object with slot values for which
+			    // you have defaults, then return Dialog.Delegate with this updated intent
+			    // in the updatedIntent property.
+			 	return input.getResponseBuilder().addDelegateDirective(null).build();
+//			 	return handleIntentAndGenerateResponse(input, intentRequest);
+			 	
+			} else if (intentRequest.getDialogState() == DialogState.IN_PROGRESS){
+				return input.getResponseBuilder().addDelegateDirective(null).build();
+			    // return a Dialog.Delegate directive with no updatedIntent property.
+			} else if (intentRequest.getDialogState()==DialogState.COMPLETED){
+			    return handleIntentAndGenerateResponse(input, intentRequest);
+
+			}
 		return null;
+		
+	}
+	
+
+	private Optional<Response> handleIntentAndGenerateResponse(HandlerInput input, IntentRequest intentRequest) {
+		
+		// Dialog is now complete and all required slots should be filled,
+		// so call your normal intent handler. 
+//		Map<String, Object> persistentAttributes = input.getAttributesManager().getPersistentAttributes();
+		
+	    
+		StringBuilder RESPONSE=new StringBuilder();
+		StringBuilder DELTA_CHANGE=new StringBuilder();
+		Map<String,Slot> slotMap=intentRequest.getIntent().getSlots();
+		String crypto="";
+		String fiat="";
+		
+		if(slotMap.get("crypto").getResolutions().getResolutionsPerAuthority().get(0).getStatus().getCode()==StatusCode.ER_SUCCESS_MATCH)
+		crypto=slotMap.get("crypto").getResolutions().getResolutionsPerAuthority().get(0).getValues().get(0).getValue().getName();
+		if(slotMap.get("fiat").getResolutions().getResolutionsPerAuthority().get(0).getStatus().getCode()==StatusCode.ER_SUCCESS_MATCH)
+		fiat=slotMap.get("fiat").getResolutions().getResolutionsPerAuthority().get(0).getValues().get(0).getValue().getName();
+		PricesDto prices=null;
+		if(Constants.MAPPING.get(crypto.toLowerCase())!=null) {
+			prices=getPrice(Constants.MAPPING.get(crypto.toLowerCase()));
+		}
+		
+		//Getting Price Diff from last session
+//		if(persistentAttributes.get("PRICE")!=null) {
+//			int change=getPriceDiff((int)persistentAttributes.get("PRICE"),prices.getDollarPrice().intValue());
+//			if(change>0) {
+//				DELTA_CHANGE.append("up ").append(change).append(" percent since you last asked .");
+//			}
+//			else if(change<0) {
+//				DELTA_CHANGE.append("down ").append(Math.abs(change)).append(" percent since you last asked .");
+//			}
+//			}
+		
+		RESPONSE.append("The Current "+crypto+" price is ");
+		switch(fiat.toLowerCase()) {
+		case "rupee":RESPONSE.append((int)(prices.getDollarPrice()*getUSDtoINRConversion())+" in rupees ,").append(DELTA_CHANGE.toString());
+					break;
+		case "dollar":RESPONSE.append(prices.getDollarPrice().intValue()+" in dollars .").append(DELTA_CHANGE.toString());
+					break;
+		case "euro": RESPONSE.append(prices.getEuroPrice().intValue()+" in euros .").append(DELTA_CHANGE.toString());
+					break;
+		default	:	RESPONSE.setLength(0);
+					RESPONSE.append("Sorry, This currency is currently not supported .");
+					break;
+					
+		}
+		
+		
+		RESPONSE.append("Is there anything else i can help you with ?");
+		
+//		persistentAttributes.put("PRICE", prices.getDollarPrice().intValue());
+		
+		return input.getResponseBuilder()
+		        .withSpeech(RESPONSE.toString())
+		        .withReprompt(Constants.HELP_MESSAGE)
+		        .withShouldEndSession(false)
+		        .build();
 	}
 	
 	
@@ -47,6 +129,14 @@ public class GetPriceHandler implements RequestHandler{
 	
 	
 	
+	private int getPriceDiff(int priceInDB, int currentPrice) {
+		
+		int change=(currentPrice-priceInDB)/priceInDB*100;
+		return change;
+		
+		
+	}
+
 	//********************************************API CALLS*************************************
 	private static Double getUSDtoINRConversion()  {
 		
