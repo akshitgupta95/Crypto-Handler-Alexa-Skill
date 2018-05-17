@@ -67,7 +67,7 @@ public class GetPriceHandler implements RequestHandler{
 		
 		// Dialog is now complete and all required slots should be filled,
 		// so call your normal intent handler. 
-//		Map<String, Object> persistentAttributes = input.getAttributesManager().getPersistentAttributes();
+		Map<String, Object> persistentAttributes = input.getAttributesManager().getPersistentAttributes();
 		
 	    
 		StringBuilder RESPONSE=new StringBuilder();
@@ -77,43 +77,59 @@ public class GetPriceHandler implements RequestHandler{
 		String fiat="";
 		
 		if(slotMap.get("crypto").getResolutions().getResolutionsPerAuthority().get(0).getStatus().getCode()==StatusCode.ER_SUCCESS_MATCH)
-		crypto=slotMap.get("crypto").getResolutions().getResolutionsPerAuthority().get(0).getValues().get(0).getValue().getName();
+			crypto=slotMap.get("crypto").getResolutions().getResolutionsPerAuthority().get(0).getValues().get(0).getValue().getName();
 		if(slotMap.get("fiat").getResolutions().getResolutionsPerAuthority().get(0).getStatus().getCode()==StatusCode.ER_SUCCESS_MATCH)
-		fiat=slotMap.get("fiat").getResolutions().getResolutionsPerAuthority().get(0).getValues().get(0).getValue().getName();
+			fiat=slotMap.get("fiat").getResolutions().getResolutionsPerAuthority().get(0).getValues().get(0).getValue().getName();
+		
 		PricesDto prices=null;
 		if(Constants.MAPPING.get(crypto.toLowerCase())!=null) {
 			prices=getPrice(Constants.MAPPING.get(crypto.toLowerCase()));
-		}
+		
 		
 		//Getting Price Diff from last session
-//		if(persistentAttributes.get("PRICE")!=null) {
-//			int change=getPriceDiff((int)persistentAttributes.get("PRICE"),prices.getDollarPrice().intValue());
-//			if(change>0) {
-//				DELTA_CHANGE.append("up ").append(change).append(" percent since you last asked .");
-//			}
-//			else if(change<0) {
-//				DELTA_CHANGE.append("down ").append(Math.abs(change)).append(" percent since you last asked .");
-//			}
-//			}
+		
+		if(persistentAttributes.get("PRICE"+Constants.MAPPING.get(crypto.toLowerCase()))!=null) {
+			double change=getPriceDiff(Double.parseDouble((String)persistentAttributes.get("PRICE"+Constants.MAPPING.get(crypto.toLowerCase()))),prices.getDollarPrice());
+			if(change>0.0) {
+				DELTA_CHANGE.append("up ").append(change).append(" percent since you last asked .");
+			}
+			else if(change<0.0) {
+				DELTA_CHANGE.append("down ").append(Math.abs(change)).append(" percent since you last asked .");
+			}
+			}
+		}
 		
 		RESPONSE.append("The Current "+crypto+" price is ");
+		
+		if(prices!=null) {
+			
+		
 		switch(fiat.toLowerCase()) {
 		case "rupee":RESPONSE.append((int)(prices.getDollarPrice()*getUSDtoINRConversion())+" in rupees ,").append(DELTA_CHANGE.toString());
 					break;
 		case "dollar":RESPONSE.append(prices.getDollarPrice().intValue()+" in dollars .").append(DELTA_CHANGE.toString());
 					break;
-		case "euro": RESPONSE.append(prices.getEuroPrice().intValue()+" in euros .").append(DELTA_CHANGE.toString());
+		case "euro":RESPONSE.append(prices.getEuroPrice().intValue()+" in euros .").append(DELTA_CHANGE.toString());
 					break;
-		default	:	RESPONSE.setLength(0);
-					RESPONSE.append("Sorry, This currency is currently not supported .");
-					break;
+		default	:RESPONSE.setLength(0);
+				 RESPONSE.append("Sorry, This currency is currently not supported .");
+				 break;
 					
+				}
+		}
+		else {
+			RESPONSE.setLength(0);
+			 RESPONSE.append("Sorry, This Crypto currency is currently not supported .");
 		}
 		
 		
 		RESPONSE.append("Is there anything else i can help you with ?");
 		
 //		persistentAttributes.put("PRICE", prices.getDollarPrice().intValue());
+		if(prices!=null) {
+		persistentAttributes.put("PRICE"+Constants.MAPPING.get(crypto.toLowerCase()), prices.getDollarPrice().toString());
+		}
+		input.getAttributesManager().savePersistentAttributes();
 		
 		return input.getResponseBuilder()
 		        .withSpeech(RESPONSE.toString())
@@ -129,10 +145,11 @@ public class GetPriceHandler implements RequestHandler{
 	
 	
 	
-	private int getPriceDiff(int priceInDB, int currentPrice) {
+	private double getPriceDiff(double priceInDB, double currentPrice) {
 		
-		int change=(currentPrice-priceInDB)/priceInDB*100;
-		return change;
+		double change= (((currentPrice-priceInDB)*100)/priceInDB);
+		double roundOff = (double) Math.round(change * 100) / 100;
+		return roundOff;
 		
 		
 	}
