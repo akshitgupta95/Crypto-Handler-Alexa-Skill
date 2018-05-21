@@ -18,9 +18,12 @@ public class SupportedCurrenciesHandler implements RequestHandler {
 
 	    @Override
 	    public Optional<Response> handle(HandlerInput input) {
+	    	String support="Cryptocurrencies : Bitcoin,Bitcoin Cash,Ripple,IOTA,Ethereum,Litecoin "+"\n"+
+	    					"Currencies for Price : U.S. Dollar,Euro,Indian Rupee";
 	        return input.getResponseBuilder()
 	                .withSpeech(Constants.SUPPORTED_CURRENCIES)
 	                .withReprompt(Constants.HELP_MESSAGE)
+	                .withSimpleCard("Supported Currencies", support)
 	                .withShouldEndSession(false)
 	                .build();
 	    }

@@ -72,6 +72,7 @@ public class GetPriceHandler implements RequestHandler{
 	    
 		StringBuilder RESPONSE=new StringBuilder();
 		StringBuilder DELTA_CHANGE=new StringBuilder();
+		StringBuilder CARD_RESPONSE=new StringBuilder();
 		Map<String,Slot> slotMap=intentRequest.getIntent().getSlots();
 		String crypto="";
 		String fiat="";
@@ -91,39 +92,39 @@ public class GetPriceHandler implements RequestHandler{
 		if(persistentAttributes.get("PRICE"+Constants.MAPPING.get(crypto.toLowerCase()))!=null) {
 			double change=getPriceDiff(Double.parseDouble((String)persistentAttributes.get("PRICE"+Constants.MAPPING.get(crypto.toLowerCase()))),prices.getDollarPrice());
 			if(change>0.0) {
-				DELTA_CHANGE.append("up ").append(change).append(" percent since you last asked .");
+				DELTA_CHANGE.append(" Up ").append(change).append(" percent since you last asked.");
 			}
 			else if(change<0.0) {
-				DELTA_CHANGE.append("down ").append(Math.abs(change)).append(" percent since you last asked .");
+				DELTA_CHANGE.append(" Down ").append(Math.abs(change)).append(" percent since you last asked.");
 			}
 			}
 		}
 		
-		RESPONSE.append("The Current "+crypto+" price is ");
+		RESPONSE.append("The current "+crypto+" price is ");
 		
 		if(prices!=null) {
 			
 		
 		switch(fiat.toLowerCase()) {
-		case "rupee":RESPONSE.append((int)(prices.getDollarPrice()*getUSDtoINRConversion())+" in rupees ,").append(DELTA_CHANGE.toString());
+		case "rupee":RESPONSE.append((int)(prices.getDollarPrice()*getUSDtoINRConversion())+" in rupees.").append(DELTA_CHANGE.toString());
 					break;
-		case "dollar":RESPONSE.append(prices.getDollarPrice().intValue()+" in dollars .").append(DELTA_CHANGE.toString());
+		case "dollar":RESPONSE.append(prices.getDollarPrice().intValue()+" in dollars.").append(DELTA_CHANGE.toString());
 					break;
-		case "euro":RESPONSE.append(prices.getEuroPrice().intValue()+" in euros .").append(DELTA_CHANGE.toString());
+		case "euro":RESPONSE.append(prices.getEuroPrice().intValue()+" in euros.").append(DELTA_CHANGE.toString());
 					break;
 		default	:RESPONSE.setLength(0);
-				 RESPONSE.append("Sorry, This currency is currently not supported .");
+				 RESPONSE.append("Sorry, This currency is currently not supported.");
 				 break;
 					
 				}
 		}
 		else {
 			RESPONSE.setLength(0);
-			 RESPONSE.append("Sorry, This Crypto currency is currently not supported .");
+			 RESPONSE.append("Sorry, This crypto currency is currently not supported.");
 		}
+		CARD_RESPONSE.append(RESPONSE.toString());
 		
-		
-		RESPONSE.append("Is there anything else i can help you with ?");
+		RESPONSE.append(" Is there anything else i can help you with ?");
 		
 //		persistentAttributes.put("PRICE", prices.getDollarPrice().intValue());
 		if(prices!=null) {
@@ -133,6 +134,7 @@ public class GetPriceHandler implements RequestHandler{
 		
 		return input.getResponseBuilder()
 		        .withSpeech(RESPONSE.toString())
+		        .withSimpleCard("Price", CARD_RESPONSE.toString())
 		        .withReprompt(Constants.HELP_MESSAGE)
 		        .withShouldEndSession(false)
 		        .build();

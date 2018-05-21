@@ -1,0 +1,268 @@
+{
+    "interactionModel": {
+        "languageModel": {
+            "invocationName": "crypto handler",
+            "intents": [
+                {
+                    "name": "AMAZON.CancelIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.HelpIntent",
+                    "samples": []
+                },
+                {
+                    "name": "AMAZON.StopIntent",
+                    "samples": [
+                        "na",
+                        "dont need anything",
+                        "nothing",
+                        "naah",
+                        "nope",
+                        "no"
+                    ]
+                },
+                {
+                    "name": "GetPriceIntent",
+                    "slots": [
+                        {
+                            "name": "crypto",
+                            "type": "cryptocurrency",
+                            "samples": [
+                                "need price for {crypto} in {fiat}",
+                                "interested in {crypto}",
+                                "price of {crypto}",
+                                "i need price for {crypto}",
+                                "i am interested in {crypto}",
+                                "{crypto}"
+                            ]
+                        },
+                        {
+                            "name": "fiat",
+                            "type": "fiatcurrency",
+                            "samples": [
+                                "price in {fiat}",
+                                "prices in {fiat}",
+                                "i want price in {fiat}",
+                                "i want prices in {fiat}",
+                                "{fiat}"
+                            ]
+                        }
+                    ],
+                    "samples": [
+                        "hola",
+                        "hello",
+                        "hi",
+                        "price for {crypto} in {fiat}",
+                        "price for {crypto}",
+                        " i want price of {crypto}",
+                        "what are the prices",
+                        "tell price",
+                        "tell prices",
+                        "give me the prices",
+                        "what is the price",
+                        "get price",
+                        "price of one {crypto} in {fiat}",
+                        "price of one {crypto}",
+                        "what is the {crypto} price in {fiat}",
+                        "what is the {crypto} price",
+                        "give me the {crypto} price",
+                        "give me the {crypto} price in {fiat}",
+                        "tell me the {crypto} price in {fiat}",
+                        "tell me the {crypto} price",
+                        "{crypto} price in {fiat}",
+                        "{crypto} price",
+                        "price of {crypto} in {fiat}",
+                        "price of {crypto}",
+                        "what is the price of one {crypto} in {fiat}",
+                        "what is price of one {crypto}",
+                        "tell me the price of {crypto}",
+                        "give me the price of {crypto} in {fiat}",
+                        "give me the price of {crypto}",
+                        "what is the price of {crypto} in {fiat}",
+                        "what is the price of {crypto}",
+                        "{fiat}",
+                        "{crypto}",
+                        "tell me the price of {crypto} in {fiat}"
+                    ]
+                },
+                {
+                    "name": "SupportedCurrenciesIntent",
+                    "slots": [],
+                    "samples": [
+                        "what currencies can you give info about",
+                        "what other currencies are supported",
+                        "what all currencies are supported",
+                        "i can ask prices for which currencies",
+                        "i can ask prices for ",
+                        "what all is supported",
+                        "which currencies can you tell price for",
+                        "you support which currencies",
+                        "you can tell prices in which currencies",
+                        "which crpto currencies are supported",
+                        "what all crypto currencies are supported"
+                    ]
+                },
+                {
+                    "name": "AMAZON.PauseIntent",
+                    "samples": []
+                }
+            ],
+            "types": [
+                {
+                    "name": "cryptocurrency",
+                    "values": [
+                        {
+                            "name": {
+                                "value": "litecoin",
+                                "synonyms": [
+                                    "lite coin"
+                                ]
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "bitcoin cash",
+                                "synonyms": [
+                                    "bitcoincash"
+                                ]
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "iota",
+                                "synonyms": [
+                                    "IOTA",
+                                    "m. i. o. t. a.",
+                                    "miota",
+                                    "i. o. t. a."
+                                ]
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "ripple"
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "ethereum",
+                                "synonyms": [
+                                    "ether"
+                                ]
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "Bitcoin"
+                            }
+                        }
+                    ]
+                },
+                {
+                    "name": "fiatcurrency",
+                    "values": [
+                        {
+                            "name": {
+                                "value": "euro",
+                                "synonyms": [
+                                    "euros"
+                                ]
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "dollar",
+                                "synonyms": [
+                                    "united states dollars",
+                                    "u.s. dollars",
+                                    "dollars",
+                                    "US dollar",
+                                    "u.s. dollars",
+                                    "United States Dollar"
+                                ]
+                            }
+                        },
+                        {
+                            "name": {
+                                "value": "rupee",
+                                "synonyms": [
+                                    "rupees",
+                                    "INR",
+                                    "i. n. r.",
+                                    "indian rupees"
+                                ]
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        "dialog": {
+            "intents": [
+                {
+                    "name": "GetPriceIntent",
+                    "confirmationRequired": false,
+                    "prompts": {},
+                    "slots": [
+                        {
+                            "name": "crypto",
+                            "type": "cryptocurrency",
+                            "confirmationRequired": false,
+                            "elicitationRequired": true,
+                            "prompts": {
+                                "elicitation": "Elicit.Slot.986487880139.471811101257"
+                            }
+                        },
+                        {
+                            "name": "fiat",
+                            "type": "fiatcurrency",
+                            "confirmationRequired": false,
+                            "elicitationRequired": true,
+                            "prompts": {
+                                "elicitation": "Elicit.Slot.986487880139.817518604837"
+                            }
+                        }
+                    ]
+                }
+            ]
+        },
+        "prompts": [
+            {
+                "id": "Elicit.Slot.986487880139.471811101257",
+                "variations": [
+                    {
+                        "type": "PlainText",
+                        "value": "Price of which crypto Currency?"
+                    },
+                    {
+                        "type": "PlainText",
+                        "value": "which crypto currency are you interested in ?"
+                    }
+                ]
+            },
+            {
+                "id": "Elicit.Slot.986487880139.817518604837",
+                "variations": [
+                    {
+                        "type": "PlainText",
+                        "value": "you want prices in indian rupees,US dollars or euros?"
+                    },
+                    {
+                        "type": "PlainText",
+                        "value": "I can provide prices in indian rupees,US dollars and euros .Which one do you want?"
+                    }
+                ]
+            },
+            {
+                "id": "Confirm.Slot.986487880139.817518604837",
+                "variations": [
+                    {
+                        "type": "PlainText",
+                        "value": "I can also set this {fiat} as the default choice for your future interaction.Do you want this?"
+                    }
+                ]
+            }
+        ]
+    }
+}

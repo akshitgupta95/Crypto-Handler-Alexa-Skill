@@ -18,9 +18,11 @@ public class HelpIntentHandler implements RequestHandler {
 
     @Override
     public Optional<Response> handle(HandlerInput input) {
+    		String help="You can say things like:"+"\n"+"\"What is the price of Ethereum\"" +"\n"+"\"Price of one Bitcoin\""+"\n"+"\"what all currencies are supported\"";
         return input.getResponseBuilder()
                 .withSpeech(Constants.HELP_MESSAGE)
                 .withReprompt(Constants.HELP_MESSAGE)
+                .withSimpleCard("Using This Skill", help)
                 .withShouldEndSession(false)
                 .build();
     }
