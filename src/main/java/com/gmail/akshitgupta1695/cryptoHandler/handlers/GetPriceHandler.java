@@ -89,7 +89,7 @@ public class GetPriceHandler implements RequestHandler{
 		
 		//Getting Price Diff from last session
 		
-		if(persistentAttributes.get("PRICE"+Constants.MAPPING.get(crypto.toLowerCase()))!=null) {
+		if(persistentAttributes.get("PRICE"+Constants.MAPPING.get(crypto.toLowerCase()))!=null && prices!=null) {
 			double change=getPriceDiff(Double.parseDouble((String)persistentAttributes.get("PRICE"+Constants.MAPPING.get(crypto.toLowerCase()))),prices.getDollarPrice());
 			if(change>0.0) {
 				DELTA_CHANGE.append(" Up ").append(change).append(" percent since you last asked.");
@@ -106,7 +106,9 @@ public class GetPriceHandler implements RequestHandler{
 			
 		
 		switch(fiat.toLowerCase()) {
-		case "rupee":RESPONSE.append((int)(prices.getDollarPrice()*getUSDtoINRConversion())+" in rupees.").append(DELTA_CHANGE.toString());
+		case "rupee":if(getUSDtoINRConversion()!=null)
+					RESPONSE.append((int)(prices.getDollarPrice()*getUSDtoINRConversion())+" in rupees.").append(DELTA_CHANGE.toString());
+					else RESPONSE.append("There was a problem connecting to server. Please try again later");
 					break;
 		case "dollar":RESPONSE.append(prices.getDollarPrice().intValue()+" in dollars.").append(DELTA_CHANGE.toString());
 					break;
